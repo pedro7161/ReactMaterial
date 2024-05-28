@@ -1,58 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Typography, AppBar, CssBaseline, Grid, Toolbar, Container, Paper } from '@mui/material';
-import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import CryptoCurrencys from "./CryptoCurrencys";
 import axios from 'axios';
-
-const CryptoCurrencys = ({ onCryptoSelect }) => {
-    const [cryptoList, setCryptoList] = useState([]);
-    const [loading, setLoading] = useState(true);
-   
-    // get all info about cryptos
-    useEffect(() => {
-        const fetchCryptos = async () => {
-            try {
-                const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
-                    params: {
-                        vs_currency: 'eur',
-                        order: 'market_cap_desc',
-                        sparkline: false,
-                    },
-                });
-                setCryptoList(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching the cryptocurrencies", error);
-                setLoading(false);
-            }
-        };
-
-        fetchCryptos();
-    }, []);
-
-    const handleCryptoSelect = (crypto) => {
-        onCryptoSelect(crypto);
-    };
-
-    return (
-        <Container maxWidth="sm">
-            {loading ? (
-                <Typography variant="h6" align="center">Loading...</Typography>
-            ) : (
-                <Autocomplete
-                    disablePortal
-                    id="crypto-combo-box"
-                    options={cryptoList}
-                    getOptionLabel={(option) => option.name}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} label="Cryptocurrency" />}
-                    onChange={(event, value) => handleCryptoSelect(value)}
-                />
-            )}
-        </Container>
-    );
-}
 
 // Define the Item component
 const Item = ({ children }) => (
@@ -64,6 +14,7 @@ const Item = ({ children }) => (
 const App = () => {
     const [selectedCrypto, setSelectedCrypto] = useState(null);
     const [cryptoData, setCryptoData] = useState(null);
+    const [img, setImg] = useState(null);
 
     const handleCryptoSelect = (crypto) => {
         setSelectedCrypto(crypto);
@@ -71,7 +22,7 @@ const App = () => {
 
     useEffect(() => {
         // Check if cryptoData is already fetched for the selected cryptocurrency
-        if (selectedCrypto && cryptoData && cryptoData.id === selectedCrypto.id) {
+        if (selectedCrypto && cryptoData && cryptoData.id === selectedCrypto.id || selectedCrypto==null) {
             return; // Do nothing if cryptoData is already fetched for the selected cryptocurrency
         }
 
@@ -82,21 +33,26 @@ const App = () => {
                         vs_currency: 'eur',
                     },
                 });
+                if (!response.data) {
+                    console.error("Error fetching the cryptocurrency data: No data found", response);
+                    return;
+                }
                 setCryptoData(response.data);
+                setImg(response.data.image.small);
             } catch (error) {
                 console.error("Error fetching the cryptocurrency data", error);
             }
         };
 
         fetchCryptoData();
-    }, [selectedCrypto, cryptoData]);
+    }, [selectedCrypto, cryptoData, img]);
 
     return (
         <>
             <CssBaseline />
             <AppBar position="relative">
                 <Toolbar>
-                    <CurrencyBitcoinIcon />
+                    <BarChartIcon />
                     <Typography variant="h6">
                         CryptoManager
                     </Typography>
@@ -117,10 +73,14 @@ const App = () => {
                             <Grid item xs={8}>
                                 <Item>
                                     <CryptoCurrencys onCryptoSelect={handleCryptoSelect} />
+                                    
                                 </Item>
                             </Grid>
                             <Grid item xs={4}>
                                 <Item>
+                                {img ? (
+                                        <img src={img} alt={selectedCrypto.name} />
+                                    ) : null}
                                     {selectedCrypto && cryptoData ? (
                                         <>
                                             <Typography variant="h6">Current Price</Typography>
@@ -129,6 +89,7 @@ const App = () => {
                                     ) : (
                                         <Typography variant="body1">Select a cryptocurrency</Typography>
                                     )}
+                                 
                                 </Item>
                             </Grid>
                             <Grid item xs={12}>
