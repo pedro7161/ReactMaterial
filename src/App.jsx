@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Typography, AppBar, CssBaseline, Grid, Toolbar, Container, Paper } from '@mui/material';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CryptoCurrencys from "./CryptoCurrencys";
+import Chart from "./CreateChart"; // Import the Chart component
 import axios from 'axios';
 
 // Define the Item component
@@ -22,7 +23,7 @@ const App = () => {
 
     useEffect(() => {
         // Check if cryptoData is already fetched for the selected cryptocurrency
-        if (selectedCrypto && cryptoData && cryptoData.id === selectedCrypto.id || selectedCrypto==null) {
+        if (selectedCrypto && cryptoData && cryptoData.id === selectedCrypto.id || selectedCrypto == null) {
             return; // Do nothing if cryptoData is already fetched for the selected cryptocurrency
         }
 
@@ -93,7 +94,10 @@ const App = () => {
                                 </Item>
                             </Grid>
                             <Grid item xs={12}>
-                                <Item>Chart</Item>
+                                <Item>
+                                    {/* Render the Chart component here */}
+                                    <Chart />
+                                </Item>
                             </Grid>
                         </Grid>
                     </div>
