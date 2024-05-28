@@ -2,51 +2,88 @@ import React, { useState, useEffect } from "react";
 import { Typography, AppBar, CssBaseline, Grid, Toolbar, Container, Paper } from '@mui/material';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CryptoCurrencys from "./CryptoCurrencys";
-import Chart from "./CreateChart"; // Import the Chart component
 import axios from 'axios';
 
-// Define the Item component
-const Item = ({ children }) => (
+// Define the types for the data
+interface CryptoCurrency {
+    id: string;
+    name: string;
+    image: {
+        small: string;
+    };
+    market_data: {
+        current_price: {
+            eur: number;
+        };
+    };
+}
+
+interface CryptoMarket {
+    id: string;
+    name: string;
+}
+
+const Item: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Paper style={{ padding: '16px', textAlign: 'center', color: '#000' }}>
         {children}
     </Paper>
 );
 
-const App = () => {
-    const [selectedCrypto, setSelectedCrypto] = useState(null);
-    const [cryptoData, setCryptoData] = useState(null);
-    const [img, setImg] = useState(null);
+const App: React.FC = () => {
+    const [selectedCrypto, setSelectedCrypto] = useState<CryptoMarket | null>(null);
+    const [cryptoData, setCryptoData] = useState<CryptoCurrency | null>(null);
+    const [img, setImg] = useState<string | null>(null);
+    const [statusCode, setStatusCode] = useState<number | null>(null);
+    const [cryptoOptions, setCryptoOptions] = useState<CryptoMarket[]>([]);
 
-    const handleCryptoSelect = (crypto) => {
+    const handleCryptoSelect = (crypto: CryptoMarket | null) => {
         setSelectedCrypto(crypto);
+        if (crypto) {
+            fetchCryptoData(crypto);
+        }
+    };
+
+    const fetchCryptos = async () => {
+        if (cryptoData === null) {
+            try {
+                const response = await axios.get<CryptoMarket[]>('https://api.coingecko.com/api/v3/coins/markets', {
+                    params: {
+                        vs_currency: 'eur',
+                        order: 'market_cap_desc',
+                        sparkline: false,
+                    },
+                });
+                setCryptoOptions(response.data);
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.error("Error fetching cryptocurrencies:", error.code);
+                    setStatusCode(Number(error.code));
+                }
+            }
+        }
+    };
+
+    const fetchCryptoData = async (crypto: CryptoMarket) => {
+        try {
+            const response = await axios.get<CryptoCurrency>(`https://api.coingecko.com/api/v3/coins/${crypto.id}`, {
+                params: {
+                    vs_currency: 'eur',
+                },
+            });
+            setCryptoData(response.data);
+            setImg(response.data.image.small);
+            setStatusCode(null);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error("Error fetching cryptocurrency data:", error.code);
+                setStatusCode(Number(error.code));
+            }
+        }
     };
 
     useEffect(() => {
-        // Check if cryptoData is already fetched for the selected cryptocurrency
-        if (selectedCrypto && cryptoData && cryptoData.id === selectedCrypto.id || selectedCrypto == null) {
-            return; // Do nothing if cryptoData is already fetched for the selected cryptocurrency
-        }
-
-        const fetchCryptoData = async () => {
-            try {
-                const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${selectedCrypto.id}`, {
-                    params: {
-                        vs_currency: 'eur',
-                    },
-                });
-                if (!response.data) {
-                    console.error("Error fetching the cryptocurrency data: No data found", response);
-                    return;
-                }
-                setCryptoData(response.data);
-                setImg(response.data.image.small);
-            } catch (error) {
-                console.error("Error fetching the cryptocurrency data", error);
-            }
-        };
-
-        fetchCryptoData();
-    }, [selectedCrypto, cryptoData, img]);
+        fetchCryptos();
+    }, []);
 
     return (
         <>
@@ -73,15 +110,17 @@ const App = () => {
                         <Grid container spacing={2}>
                             <Grid item xs={8}>
                                 <Item>
-                                    <CryptoCurrencys onCryptoSelect={handleCryptoSelect} />
+                                    <CryptoCurrencys onChange={handleCryptoSelect} options={cryptoOptions} />
+                                    {statusCode !== null ? "API Limit Reached try again later" : " "}
                                     
+                                 
                                 </Item>
                             </Grid>
                             <Grid item xs={4}>
                                 <Item>
-                                {img ? (
-                                        <img src={img} alt={selectedCrypto.name} />
-                                    ) : null}
+                                    {img && (
+                                        <img src={img} alt={selectedCrypto?.name} />
+                                    )}
                                     {selectedCrypto && cryptoData ? (
                                         <>
                                             <Typography variant="h6">Current Price</Typography>
@@ -90,21 +129,15 @@ const App = () => {
                                     ) : (
                                         <Typography variant="body1">Select a cryptocurrency</Typography>
                                     )}
-                                 
                                 </Item>
                             </Grid>
-                            <Grid item xs={12}>
-                                <Item>
-                                    {/* Render the Chart component here */}
-                                    <Chart />
-                                </Item>
-                            </Grid>
+                          
                         </Grid>
                     </div>
                 </Container>
             </main>
         </>
     );
-}
+};
 
 export default App;
