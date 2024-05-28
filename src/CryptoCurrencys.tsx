@@ -27,6 +27,7 @@ interface CryptoCurrencysProps {
     cryptoData: CryptoCurrency | null; // Add cryptoData prop
 }
 
+
 const Item: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Paper style={{ padding: '16px', textAlign: 'center', color: '#000' }}>
         {children}
