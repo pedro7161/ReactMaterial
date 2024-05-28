@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, AppBar, CssBaseline, Grid, Toolbar, Container, Paper } from '@mui/material';
+import { Typography, AppBar, CssBaseline, Container, Button, Toolbar } from '@mui/material';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CryptoCurrencys from "./CryptoCurrencys";
 import axios from 'axios';
@@ -23,18 +23,12 @@ interface CryptoMarket {
     name: string;
 }
 
-const Item: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <Paper style={{ padding: '16px', textAlign: 'center', color: '#000' }}>
-        {children}
-    </Paper>
-);
-
 const App: React.FC = () => {
     const [selectedCrypto, setSelectedCrypto] = useState<CryptoMarket | null>(null);
     const [cryptoData, setCryptoData] = useState<CryptoCurrency | null>(null);
-    const [img, setImg] = useState<string | null>(null);
     const [statusCode, setStatusCode] = useState<number | null>(null);
     const [cryptoOptions, setCryptoOptions] = useState<CryptoMarket[]>([]);
+    const [components, setComponents] = useState<JSX.Element[]>([]);
 
     const handleCryptoSelect = (crypto: CryptoMarket | null) => {
         setSelectedCrypto(crypto);
@@ -44,21 +38,19 @@ const App: React.FC = () => {
     };
 
     const fetchCryptos = async () => {
-        if (cryptoData === null) {
-            try {
-                const response = await axios.get<CryptoMarket[]>('https://api.coingecko.com/api/v3/coins/markets', {
-                    params: {
-                        vs_currency: 'eur',
-                        order: 'market_cap_desc',
-                        sparkline: false,
-                    },
-                });
-                setCryptoOptions(response.data);
-            } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    console.error("Error fetching cryptocurrencies:", error.code);
-                    setStatusCode(Number(error.code));
-                }
+        try {
+            const response = await axios.get<CryptoMarket[]>('https://api.coingecko.com/api/v3/coins/markets', {
+                params: {
+                    vs_currency: 'eur',
+                    order: 'market_cap_desc',
+                    sparkline: false,
+                },
+            });
+            setCryptoOptions(response.data);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error("Error fetching cryptocurrencies:", error.code);
+                setStatusCode(Number(error.code));
             }
         }
     };
@@ -71,7 +63,6 @@ const App: React.FC = () => {
                 },
             });
             setCryptoData(response.data);
-            setImg(response.data.image.small);
             setStatusCode(null);
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -84,6 +75,11 @@ const App: React.FC = () => {
     useEffect(() => {
         fetchCryptos();
     }, []);
+
+    const handleAddComponent = () => {
+        setComponents([...components, <CryptoCurrencys key={components.length} onChange={handleCryptoSelect} options={cryptoOptions} cryptoData={cryptoData} />]);
+    };
+    
 
     return (
         <>
@@ -107,32 +103,12 @@ const App: React.FC = () => {
                         </Typography>
                     </div>
                     <div>
-                        <Grid container spacing={2}>
-                            <Grid item xs={8}>
-                                <Item>
-                                    <CryptoCurrencys onChange={handleCryptoSelect} options={cryptoOptions} />
-                                    {statusCode !== null ? "API Limit Reached try again later" : " "}
-                                    
-                                 
-                                </Item>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Item>
-                                    {img && (
-                                        <img src={img} alt={selectedCrypto?.name} />
-                                    )}
-                                    {selectedCrypto && cryptoData ? (
-                                        <>
-                                            <Typography variant="h6">Current Price</Typography>
-                                            <Typography variant="body1">{cryptoData.name}: {cryptoData.market_data.current_price.eur}</Typography>
-                                        </>
-                                    ) : (
-                                        <Typography variant="body1">Select a cryptocurrency</Typography>
-                                    )}
-                                </Item>
-                            </Grid>
-                          
-                        </Grid>
+                        <CryptoCurrencys onChange={handleCryptoSelect} options={cryptoOptions} cryptoData={cryptoData} />
+                        {statusCode !== null ? "API Limit Reached try again later" : " "}
+                        <Button variant="contained" color="primary" onClick={handleAddComponent}>
+                            Add Component
+                        </Button>
+                        {components}
                     </div>
                 </Container>
             </main>
