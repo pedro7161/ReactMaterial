@@ -15,7 +15,7 @@ interface CryptoCurrencysProps {
 
 const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ onChange, options }) => {
     return (
-        <Container maxWidth="sm">
+       
             <>
                 <Autocomplete
                     disablePortal
@@ -27,7 +27,7 @@ const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ onChange, options }) 
                     onChange={(event, value) => onChange(value)}
                 />
             </>
-        </Container>
+        
     );
 }
 
