@@ -8,20 +8,20 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Screenshots
 
-![Home Page](/img/home.png)
-Here we can see a simple page design with a brief explanation of the site and a button. The currency gets updated every 15 minutes.
+![Home Page](/img/home.png)<br>
+Here we can see a simple page design with a brief explanation of the site and a button. The currency gets updated every 15 minutes.<br>
 
-![Add Currency Button](/img/button.png)
-The button is used to add new currencies to the page.
+![Add Currency Button](/img/button.png)<br>
+The button is used to add new currencies to the page.<br>
 
-![Empty ComboBox](/img/Comboboxempty.png)
-The currency by default is empty, waiting for the user input on the combobox.
+![Empty ComboBox](/img/Comboboxempty.png)<br>
+The currency by default is empty, waiting for the user input on the combobox.<br>
 
-![Selected Currency](/img/combobox1.png)
-Here we can see the image and current price of the chosen currency.
+![Selected Currency](/img/combobox1.png)<br>
+Here we can see the image and current price of the chosen currency.<br>
 
-![Multiple Currencies](/img/combobox2.png)
-You can follow multiple currencies.
+![Multiple Currencies](/img/combobox2.png)<br>
+You can follow multiple currencies.<br>
 
 
 
@@ -60,23 +60,3 @@ In the project directory, you can run the following scripts:
     npm test: Launches the test runner in interactive watch mode.
     npm run build: Builds the app for production.
     npm run eject: Ejects from Create React App.
-
-For more information about these scripts and other configurations, refer to the Create React App documentation.
-Learn More
-
-You can learn more about React and Create React App by visiting the following links:
-
-    React documentation
-    Create React App documentation
-
-Deploying the Application
-
-To deploy the application, follow these steps:
-
-    Build the app for production:
-
-    bash
-
-npm run build
-
-Deploy the contents of the build folder to your hosting provider of choice. For example, you can use GitHub Pages, Netlify, Vercel, etc.
