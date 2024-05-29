@@ -1,3 +1,4 @@
+// CryptoCurrencies.tsx
 import React, { useState } from "react";
 import { Typography, Paper, Grid, Button } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -28,7 +29,7 @@ interface CryptoCurrency {
     };
 }
 
-interface CryptoCurrencysProps {
+interface CryptoCurrenciesProps {
     id: number;
     options: CryptoMarket[];
     onRemove: (id: number) => void;
@@ -40,7 +41,7 @@ const Item: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     </Paper>
 );
 
-const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ id, options, onRemove }) => {
+const CryptoCurrencies: React.FC<CryptoCurrenciesProps> = ({ id, options, onRemove }) => {
     const [cryptoData, setCryptoData] = useState<CryptoCurrency | null>(null);
 
     const handleCryptoSelect = (crypto: CryptoMarket | null) => {
@@ -97,4 +98,4 @@ const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ id, options, onRemove
     );
 }
 
-export default CryptoCurrencys;
+export default CryptoCurrencies;

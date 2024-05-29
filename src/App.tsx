@@ -2,10 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { Typography, AppBar, CssBaseline, Container, Button, Toolbar } from '@mui/material';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import CryptoCurrencys from "./CryptoCurrencys";
+import CryptoCurrencies from "./CryptoCurrencies";
 import axios from 'axios';
-
-
 
 interface CryptoMarket {
     id: string;
@@ -65,7 +63,7 @@ const App: React.FC = () => {
     const handleAddComponent = () => {
         const newId = nextId;
         const newComponent = (
-            <CryptoCurrencys
+            <CryptoCurrencies
                 key={newId}
                 id={newId}
                 options={cryptoOptions}
@@ -93,7 +91,7 @@ const App: React.FC = () => {
             </AppBar>
             <main>
                 <Container maxWidth="sm">
-                    <div>
+                    <div style={{ marginBottom: '20px' }}> {/* Add space below the button */}
                         <Typography variant="h2" align="center" color="textPrimary" gutterBottom>
                             Crypto Manager
                         </Typography>
