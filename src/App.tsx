@@ -1,22 +1,11 @@
+// App.tsx
 import React, { useState, useEffect } from "react";
 import { Typography, AppBar, CssBaseline, Container, Button, Toolbar } from '@mui/material';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CryptoCurrencys from "./CryptoCurrencys";
 import axios from 'axios';
 
-// Define the types for the data
-interface CryptoCurrency {
-    id: string;
-    name: string;
-    image: {
-        small: string;
-    };
-    market_data: {
-        current_price: {
-            eur: number;
-        };
-    };
-}
+
 
 interface CryptoMarket {
     id: string;
@@ -68,7 +57,7 @@ const App: React.FC = () => {
         fetchCryptos();
         const interval = setInterval(() => {
             fetchCryptos();
-        }, 60000); // Fetch data every 60 seconds
+        }, 60000 * 15); // Fetch data every 60 seconds (15 minutes)
 
         return () => clearInterval(interval); // Cleanup on unmount
     }, []);
@@ -111,12 +100,14 @@ const App: React.FC = () => {
                         <Typography variant="h5" align="center" color="textSecondary" paragraph>
                             Here you can see the latest prices of the most popular cryptocurrencies.
                         </Typography>
+                        <div style={{ textAlign: 'center' }}> {/* Align button to center */}
+                            <Button variant="contained" color="primary" onClick={handleAddComponent}>
+                                Add another Cryptocurrency
+                            </Button>
+                        </div>
+                        {statusCode !== null && <Typography variant="body1" color="red">API Limit Reached, try again later</Typography>}
                     </div>
                     <div>
-                        <Button variant="contained" color="primary" onClick={handleAddComponent}>
-                            Add Component
-                        </Button>
-                        {statusCode !== null ? "API Limit Reached, try again later" : ""}
                         {components.map(component => component.element)}
                     </div>
                 </Container>

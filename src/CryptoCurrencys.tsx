@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Typography, Paper, Grid, Button } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import CachedIcon from '@mui/icons-material/Cached';
 
 interface CryptoMarket {
     id: string;
@@ -75,11 +76,16 @@ const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ id, options, onRemove
             </Grid>
             <Grid item xs={4}>
                 <Item>
+                    {cryptoData && cryptoData.image.small && (
+                        <img src={cryptoData.image.small} alt={cryptoData.name} style={{ maxWidth: '100px' }} />
+                    )}
+                    {!cryptoData?.image.small && <CachedIcon style={{ fontSize: 100 }} />}
                     {cryptoData && (
                         <>
-                            <img src={cryptoData.image.small} alt={cryptoData.name} style={{ maxWidth: '100px' }} />
                             <Typography variant="h6">Current Price</Typography>
-                            <Typography variant="body1">{cryptoData.name}: {cryptoData.market_data.current_price.eur}</Typography>
+                            <Typography variant="body1">
+                                {cryptoData.name}: {cryptoData.market_data.current_price.eur}
+                            </Typography>
                         </>
                     )}
                     <Button variant="contained" color="secondary" onClick={() => onRemove(id)}>
