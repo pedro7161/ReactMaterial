@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Typography, Grid, Paper } from '@mui/material';
+import { Typography, Paper, Grid, Button } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
@@ -22,11 +22,10 @@ interface CryptoCurrency {
 }
 
 interface CryptoCurrencysProps {
-    onChange: (crypto: CryptoMarket | null) => void;
+    id: number;
     options: CryptoMarket[];
-    cryptoData: CryptoCurrency | null; // Add cryptoData prop
+    onRemove: (id: number) => void;
 }
-
 
 const Item: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Paper style={{ padding: '16px', textAlign: 'center', color: '#000' }}>
@@ -34,11 +33,10 @@ const Item: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     </Paper>
 );
 
-const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ onChange, options }) => {
+const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ id, options, onRemove }) => {
     const [cryptoData, setCryptoData] = useState<CryptoCurrency | null>(null);
 
     const handleCryptoSelect = async (crypto: CryptoMarket | null) => {
-        onChange(crypto);
         if (crypto) {
             try {
                 const response = await fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}`);
@@ -56,7 +54,7 @@ const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ onChange, options }) 
                 <Item>
                     <Autocomplete
                         disablePortal
-                        id="crypto-combo-box"
+                        id={`${id}`}
                         options={options}
                         getOptionLabel={(option) => option.name}
                         sx={{ width: 300 }}
@@ -74,6 +72,9 @@ const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ onChange, options }) 
                             <Typography variant="body1">{cryptoData.name}: {cryptoData.market_data.current_price.eur}</Typography>
                         </>
                     )}
+                    <Button variant="contained" color="secondary" onClick={() => onRemove(id)}>
+                        Remove
+                    </Button>
                 </Item>
             </Grid>
         </Grid>
