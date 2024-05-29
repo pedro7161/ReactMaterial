@@ -6,6 +6,12 @@ import TextField from '@mui/material/TextField';
 interface CryptoMarket {
     id: string;
     name: string;
+    image: {
+        small: string;
+    };
+    current_price: {
+        eur: number;
+    };
 }
 
 interface CryptoCurrency {
@@ -36,14 +42,18 @@ const Item: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ id, options, onRemove }) => {
     const [cryptoData, setCryptoData] = useState<CryptoCurrency | null>(null);
 
-    const handleCryptoSelect = async (crypto: CryptoMarket | null) => {
+    const handleCryptoSelect = (crypto: CryptoMarket | null) => {
         if (crypto) {
-            try {
-                const response = await fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}`);
-                const data = await response.json();
-                setCryptoData(data);
-            } catch (error) {
-                console.error("Error fetching cryptocurrency data:", error);
+            const selectedCrypto = options.find((option) => option.id === crypto.id);
+            if (selectedCrypto) {
+                setCryptoData({
+                    id: selectedCrypto.id,
+                    name: selectedCrypto.name,
+                    image: { small: selectedCrypto.image.small },
+                    market_data: { current_price: { eur: selectedCrypto.current_price.eur } },
+                });
+            } else {
+                setCryptoData(null);
             }
         }
     };
@@ -54,7 +64,7 @@ const CryptoCurrencys: React.FC<CryptoCurrencysProps> = ({ id, options, onRemove
                 <Item>
                     <Autocomplete
                         disablePortal
-                        id={`${id}`}
+                        id={`crypto-combo-box-${id}`}
                         options={options}
                         getOptionLabel={(option) => option.name}
                         sx={{ width: 300 }}

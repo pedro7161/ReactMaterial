@@ -4,6 +4,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import CryptoCurrencys from "./CryptoCurrencys";
 import axios from 'axios';
 
+// Define the types for the data
 interface CryptoCurrency {
     id: string;
     name: string;
@@ -20,6 +21,12 @@ interface CryptoCurrency {
 interface CryptoMarket {
     id: string;
     name: string;
+    image: {
+        small: string;
+    };
+    current_price: {
+        eur: number;
+    };
 }
 
 interface ComponentData {
@@ -35,14 +42,20 @@ const App: React.FC = () => {
 
     const fetchCryptos = async () => {
         try {
-            const response = await axios.get<CryptoMarket[]>('https://api.coingecko.com/api/v3/coins/markets', {
+            const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
                 params: {
                     vs_currency: 'eur',
                     order: 'market_cap_desc',
                     sparkline: false,
                 },
             });
-            setCryptoOptions(response.data);
+            const cryptoData = response.data.map((crypto: any) => ({
+                id: crypto.id,
+                name: crypto.name,
+                image: { small: crypto.image },
+                current_price: { eur: crypto.current_price },
+            }));
+            setCryptoOptions(cryptoData);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Error fetching cryptocurrencies:", error.code);
@@ -53,6 +66,11 @@ const App: React.FC = () => {
 
     useEffect(() => {
         fetchCryptos();
+        const interval = setInterval(() => {
+            fetchCryptos();
+        }, 60000); // Fetch data every 60 seconds
+
+        return () => clearInterval(interval); // Cleanup on unmount
     }, []);
 
     const handleAddComponent = () => {
@@ -98,7 +116,7 @@ const App: React.FC = () => {
                         <Button variant="contained" color="primary" onClick={handleAddComponent}>
                             Add Component
                         </Button>
-                        {statusCode !== null ? "API Limit Reached try again later" : " "}
+                        {statusCode !== null ? "API Limit Reached, try again later" : ""}
                         {components.map(component => component.element)}
                     </div>
                 </Container>
