@@ -19,6 +19,7 @@ interface CryptoMarket {
 interface ComponentData {
     id: number;
     element: JSX.Element;
+    isActive: boolean;
 }
 
 const App: React.FC = () => {
@@ -67,15 +68,19 @@ const App: React.FC = () => {
                 key={newId}
                 id={newId}
                 options={cryptoOptions}
-                onRemove={handleRemoveComponent}
+                onRemove={() => handleRemoveComponent(newId)}
             />
         );
-        setComponents([...components, { id: newId, element: newComponent }]);
+        setComponents([...components, { id: newId, element: newComponent, isActive: true }]);
         setNextId(nextId + 1);
     };
 
     const handleRemoveComponent = (id: number) => {
-        setComponents(components.filter(component => component.id !== id));
+        setComponents(prevComponents =>
+            prevComponents.map(component =>
+                component.id === id ? { ...component, isActive: false } : component
+            )
+        );
     };
 
     return (
@@ -91,14 +96,14 @@ const App: React.FC = () => {
             </AppBar>
             <main>
                 <Container maxWidth="sm">
-                    <div style={{ marginBottom: '20px' }}> {/* Add space below the button */}
+                    <div style={{ marginBottom: '20px' }}>
                         <Typography variant="h2" align="center" color="textPrimary" gutterBottom>
                             Crypto Manager
                         </Typography>
                         <Typography variant="h5" align="center" color="textSecondary" paragraph>
                             Here you can see the latest prices of the most popular cryptocurrencies.
                         </Typography>
-                        <div style={{ textAlign: 'center' }}> {/* Align button to center */}
+                        <div style={{ textAlign: 'center' }}>
                             <Button variant="contained" color="primary" onClick={handleAddComponent}>
                                 Add another Cryptocurrency
                             </Button>
@@ -106,7 +111,7 @@ const App: React.FC = () => {
                         {statusCode !== null && <Typography variant="body1" color="red">API Limit Reached, try again later</Typography>}
                     </div>
                     <div>
-                        {components.map(component => component.element)}
+                        {components.map(component => component.isActive && component.element)}
                     </div>
                 </Container>
             </main>
